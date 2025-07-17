@@ -1,0 +1,267 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// TENANT MODEL - Base para multi-tenancy
+// ==========================================
+model Tenant {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  slug      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  users      User[]
+  categories Category[]
+  products   Product[]
+  orders     Order[]
+  orderItems OrderItem[]
+  discounts  Discount[]
+  customers  Customer[]
+  settings   Settings[]
+  logs       Log[]
+
+  @@map("tenants")
+}
+
+// ==========================================
+// USER MODEL - Usuarios administrativos
+// ==========================================
+model User {
+  id                     String    @id @default(uuid()) @db.Uuid
+  email                  String
+  passwordHash           String
+  name                   String
+  role                   UserRole
+  tenantId               String    @db.Uuid
+  isActive               Boolean   @default(true)
+  lastLoginAt            DateTime?
+  emailVerifiedAt        DateTime?
+  resetPasswordToken     String?
+  resetPasswordExpiresAt DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  // Relaciones
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  logs      Log[]
+
+  @@unique([email, tenantId])
+  @@map("users")
+}
+
+enum UserRole {
+  admin
+  staff
+}
+
+// ==========================================
+// CUSTOMER MODEL - Clientes que compran
+// ==========================================
+model Customer {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String
+  name      String
+  phone     String?
+  address   String?
+  tenantId  String   @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  tenant Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orders Order[]
+
+  @@unique([email, tenantId])
+  @@map("customers")
+}
+
+// ==========================================
+// CATEGORY MODEL - Categorías de productos
+// ==========================================
+model Category {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  tenantId    String   @db.Uuid
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@map("categories")
+}
+
+// ==========================================
+// PRODUCT MODEL - Productos del catálogo
+// ==========================================
+model Product {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  stock       Int
+  minStock    Int?
+  sku         String?
+  imageUrl    String?
+  isPublished Boolean  @default(false)
+  categoryId  String?  @db.Uuid
+  tenantId    String   @db.Uuid
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  category   Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  orderItems OrderItem[]
+
+  @@unique([sku, tenantId])
+  @@map("products")
+}
+
+// ==========================================
+// DISCOUNT MODEL - Códigos promocionales
+// ==========================================
+model Discount {
+  id                   String    @id @default(uuid()) @db.Uuid
+  code                 String
+  description          String?
+  type                 DiscountType
+  value                Decimal   @db.Decimal(10, 2)
+  active               Boolean   @default(true)
+  startDate            DateTime?
+  endDate              DateTime?
+  usageLimit           Int?
+  usedCount            Int       @default(0)
+  minimumOrderAmount   Decimal?  @db.Decimal(10, 2)
+  tenantId             String    @db.Uuid
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  // Relaciones
+  tenant Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orders Order[]
+
+  @@unique([code, tenantId])
+  @@map("discounts")
+}
+
+enum DiscountType {
+  percentage
+  fixed
+}
+
+// ==========================================
+// ORDER MODEL - Pedidos de clientes
+// ==========================================
+model Order {
+  id             String      @id @default(uuid()) @db.Uuid
+  customerName   String
+  customerEmail  String?
+  status         OrderStatus @default(pending)
+  subtotal       Decimal     @db.Decimal(10, 2)
+  total          Decimal     @db.Decimal(10, 2)
+  discountId     String?     @db.Uuid
+  discountAmount Decimal?    @db.Decimal(10, 2)
+  shippingAddress String?
+  notes          String?
+  tenantId       String      @db.Uuid
+  customerId     String?     @db.Uuid
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  // Relaciones
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer   Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  discount   Discount?   @relation(fields: [discountId], references: [id], onDelete: SetNull)
+  orderItems OrderItem[]
+
+  @@map("orders")
+}
+
+enum OrderStatus {
+  pending
+  paid
+  cancelled
+}
+
+// ==========================================
+// ORDER ITEM MODEL - Items de cada pedido
+// ==========================================
+model OrderItem {
+  id         String  @id @default(uuid()) @db.Uuid
+  orderId    String  @db.Uuid
+  productId  String  @db.Uuid
+  quantity   Int
+  unitPrice  Decimal @db.Decimal(10, 2)
+  totalPrice Decimal @db.Decimal(10, 2)
+  tenantId   String  @db.Uuid
+
+  // Relaciones
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@map("order_items")
+}
+
+// ==========================================
+// SETTINGS MODEL - Configuración del tenant
+// ==========================================
+model Settings {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenantId        String   @db.Uuid
+  companyName     String
+  companyLogoUrl  String?
+  currency        String   @default("USD")
+  locale          String   @default("en-US")
+  timezone        String   @default("UTC")
+  invoicePrefix   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relaciones
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId])
+  @@map("settings")
+}
+
+// ==========================================
+// LOG MODEL - Auditoría de acciones
+// ==========================================
+model Log {
+  id         String                 @id @default(uuid()) @db.Uuid
+  tenantId   String                 @db.Uuid
+  userId     String?                @db.Uuid
+  action     String
+  resource   String
+  resourceId String?
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime               @default(now())
+
+  // Relaciones
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("logs")
+}
