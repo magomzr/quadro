@@ -5,10 +5,14 @@ import {
 } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { DatabaseService } from 'src/database/database.service';
+import { DiscountsService } from 'src/discounts/discounts.service';
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly discountsService: DiscountsService,
+  ) {}
 
   async create(
     tenantId: string,
@@ -64,47 +68,26 @@ export class OrdersService {
           });
         }
 
-        // 2. Validar descuento si existe
+        // 2. Validar descuento si existe usando el servicio especializado
         let discount: any = null;
         let discountAmount = 0;
 
         if (createOrderDto.discountCode) {
-          discount = await tx.discount.findFirst({
-            where: {
-              code: createOrderDto.discountCode,
+          const discountValidation =
+            await this.discountsService.validateDiscountCode(
               tenantId,
-              active: true,
-              OR: [{ startDate: null }, { startDate: { lte: new Date() } }],
-              AND: [
-                {
-                  OR: [{ endDate: null }, { endDate: { gte: new Date() } }],
-                },
-                {
-                  OR: [
-                    { usageLimit: null },
-                    { usedCount: { lt: tx.discount.fields.usageLimit } },
-                  ],
-                },
-                {
-                  OR: [
-                    { minimumOrderAmount: null },
-                    { minimumOrderAmount: { lte: subtotal } },
-                  ],
-                },
-              ],
-            },
-          });
+              createOrderDto.discountCode,
+              subtotal,
+            );
 
-          if (!discount) {
-            throw new BadRequestException('Invalid or expired discount code');
+          if (!discountValidation.valid) {
+            throw new BadRequestException(
+              `Discount code "${createOrderDto.discountCode}" is invalid or not applicable.`,
+            );
           }
 
-          // Calcular descuento
-          if (discount.type === 'percentage') {
-            discountAmount = (subtotal * Number(discount.value)) / 100;
-          } else {
-            discountAmount = Math.min(Number(discount.value), subtotal);
-          }
+          discount = discountValidation.discount;
+          discountAmount = discountValidation.discountAmount;
         }
 
         const total = subtotal - discountAmount;
