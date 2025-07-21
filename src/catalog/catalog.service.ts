@@ -127,16 +127,18 @@ export class CatalogService {
 
   async removeCategory(tenantId: string, categoryId: string) {
     try {
-      // Desvincular productos de la categoría antes de eliminarla
-      await this.databaseService.product.updateMany({
+      const productsCount = await this.databaseService.product.count({
         where: {
           categoryId,
           tenantId,
         },
-        data: {
-          categoryId: null,
-        },
       });
+
+      if (productsCount > 0) {
+        throw new ConflictException(
+          `Cannot delete category with ${productsCount} associated products. Move or delete products first.`,
+        );
+      }
 
       return await this.databaseService.category.delete({
         where: {
