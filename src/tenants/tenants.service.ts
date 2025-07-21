@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { DatabaseService } from 'src/database/database.service';
+import { DEFAULT_SETTINGS } from 'src/shared/configs/default-settings';
 
 @Injectable()
 export class TenantsService {
@@ -12,8 +13,20 @@ export class TenantsService {
 
   async create(createTenantDto: Prisma.TenantCreateInput) {
     try {
-      return await this.databaseService.tenant.create({
-        data: createTenantDto,
+      return await this.databaseService.$transaction(async (tx) => {
+        const tenant = await tx.tenant.create({
+          data: createTenantDto,
+        });
+
+        await tx.settings.create({
+          data: {
+            ...DEFAULT_SETTINGS,
+            companyName: tenant.name,
+            tenantId: tenant.id,
+          },
+        });
+
+        return tenant;
       });
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
