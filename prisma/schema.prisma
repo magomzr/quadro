@@ -106,6 +106,7 @@ model Category {
   tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   products Product[]
 
+  @@unique([name, tenantId])
   @@map("categories")
 }
 
