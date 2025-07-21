@@ -12,16 +12,24 @@ import {
   ParseIntPipe,
   ParseBoolPipe,
   ParseUUIDPipe,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Prisma } from 'generated/prisma';
 import { CatalogService } from './catalog.service';
+import { S3UploadService } from '../shared/s3-upload.service';
 
 @Controller({
   path: 'tenants/:tenantId/catalog',
   version: '1',
 })
 export class CatalogController {
-  constructor(private readonly catalogService: CatalogService) {}
+  constructor(
+    private readonly catalogService: CatalogService,
+    private readonly s3UploadService: S3UploadService,
+  ) {}
 
   @Post('categories')
   @HttpCode(HttpStatus.CREATED)
@@ -153,5 +161,80 @@ export class CatalogController {
     @Param('productId', ParseUUIDPipe) productId: string,
   ) {
     return this.catalogService.removeProduct(tenantId, productId);
+  }
+
+  // New endpoint: Upload product image via file upload
+  @Post('products/:productId/image')
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(
+    FileInterceptor('image', {
+      fileFilter: (req, file, callback) => {
+        if (!file.mimetype.match(/^image\/(jpeg|jpg|png|gif|webp)$/)) {
+          return callback(
+            new BadRequestException('Only image files are allowed'),
+            false,
+          );
+        }
+        callback(null, true);
+      },
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB limit
+      },
+    }),
+  )
+  async uploadProductImage(
+    @Param('tenantId', ParseUUIDPipe) tenantId: string,
+    @Param('productId', ParseUUIDPipe) productId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('No image file provided');
+    }
+
+    // Upload to S3 and get URL
+    const imageUrl = await this.s3UploadService.uploadProductImage(file);
+
+    // Update product with new image URL
+    return this.catalogService.updateProduct(tenantId, productId, {
+      imageUrl,
+    });
+  }
+
+  // New endpoint: Create product with image upload
+  @Post('products/with-image')
+  @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(
+    FileInterceptor('image', {
+      fileFilter: (req, file, callback) => {
+        if (!file.mimetype.match(/^image\/(jpeg|jpg|png|gif|webp)$/)) {
+          return callback(
+            new BadRequestException('Only image files are allowed'),
+            false,
+          );
+        }
+        callback(null, true);
+      },
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB limit
+      },
+    }),
+  )
+  async createProductWithImage(
+    @Param('tenantId', ParseUUIDPipe) tenantId: string,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createProductDto: Omit<Prisma.ProductCreateInput, 'imageUrl'>,
+  ) {
+    let imageUrl: string | undefined;
+
+    if (file) {
+      // Upload to S3 and get URL
+      imageUrl = await this.s3UploadService.uploadProductImage(file);
+    }
+
+    // Create product with uploaded image URL
+    return this.catalogService.createProduct(tenantId, {
+      ...createProductDto,
+      imageUrl,
+    });
   }
 }
