@@ -5,17 +5,26 @@ import {
 } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { DatabaseService } from 'src/database/database.service';
+import { LogService } from 'src/shared/services/log.service';
+import {
+  CUSTOMER_ACTIONS,
+  RESOURCES,
+} from 'src/shared/constants/log-actions.constants';
 
 @Injectable()
 export class CustomersService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly logService: LogService,
+  ) {}
 
   async create(
     tenantId: string,
     createCustomerDto: Prisma.CustomerCreateInput,
+    userId?: string,
   ) {
     try {
-      return await this.databaseService.customer.create({
+      const customer = await this.databaseService.customer.create({
         data: {
           ...createCustomerDto,
           tenant: {
@@ -25,7 +34,36 @@ export class CustomersService {
           },
         },
       });
+
+      // Log successful customer creation
+      await this.logService.logSuccess(
+        tenantId,
+        CUSTOMER_ACTIONS.CREATE,
+        RESOURCES.CUSTOMER,
+        customer.id,
+        userId,
+        {
+          customerName: customer.name,
+          customerEmail: customer.email,
+          phone: customer.phone,
+        },
+      );
+
+      return customer;
     } catch (error) {
+      // Log failed customer creation
+      await this.logService.logError(
+        tenantId,
+        CUSTOMER_ACTIONS.CREATE,
+        RESOURCES.CUSTOMER,
+        error,
+        undefined,
+        userId,
+        {
+          attemptedData: createCustomerDto,
+        },
+      );
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           throw new ConflictException(
@@ -102,16 +140,64 @@ export class CustomersService {
     tenantId: string,
     customerId: string,
     updateCustomerDto: Prisma.CustomerUpdateInput,
+    userId?: string,
   ) {
     try {
-      return await this.databaseService.customer.update({
+      // Get original customer data for logging
+      const originalCustomer = await this.databaseService.customer.findFirst({
+        where: { id: customerId, tenantId },
+      });
+
+      if (!originalCustomer) {
+        throw new NotFoundException(
+          `Customer with ID ${customerId} not found`,
+        );
+      }
+
+      const updatedCustomer = await this.databaseService.customer.update({
         where: {
           id: customerId,
           tenantId,
         },
         data: updateCustomerDto,
       });
+
+      // Log successful customer update with before/after data
+      await this.logService.logUpdate(
+        tenantId,
+        CUSTOMER_ACTIONS.UPDATE,
+        RESOURCES.CUSTOMER,
+        customerId,
+        {
+          name: originalCustomer.name,
+          email: originalCustomer.email,
+          phone: originalCustomer.phone,
+          address: originalCustomer.address,
+        },
+        {
+          name: updatedCustomer.name,
+          email: updatedCustomer.email,
+          phone: updatedCustomer.phone,
+          address: updatedCustomer.address,
+        },
+        userId,
+      );
+
+      return updatedCustomer;
     } catch (error) {
+      // Log failed customer update
+      await this.logService.logError(
+        tenantId,
+        CUSTOMER_ACTIONS.UPDATE,
+        RESOURCES.CUSTOMER,
+        error,
+        customerId,
+        userId,
+        {
+          attemptedData: updateCustomerDto,
+        },
+      );
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
           throw new NotFoundException(
@@ -128,7 +214,7 @@ export class CustomersService {
     }
   }
 
-  async remove(tenantId: string, customerId: string) {
+  async remove(tenantId: string, customerId: string, userId?: string) {
     try {
       // Verificar si el cliente tiene órdenes asociadas
       const ordersCount = await this.databaseService.order.count({
@@ -144,13 +230,51 @@ export class CustomersService {
         );
       }
 
-      return await this.databaseService.customer.delete({
+      // Get customer data before deletion for logging
+      const customerToDelete = await this.databaseService.customer.findFirst({
+        where: { id: customerId, tenantId },
+      });
+
+      if (!customerToDelete) {
+        throw new NotFoundException(
+          `Customer with ID ${customerId} not found`,
+        );
+      }
+
+      const deletedCustomer = await this.databaseService.customer.delete({
         where: {
           id: customerId,
           tenantId,
         },
       });
+
+      // Log successful customer deletion
+      await this.logService.logDelete(
+        tenantId,
+        CUSTOMER_ACTIONS.DELETE,
+        RESOURCES.CUSTOMER,
+        customerId,
+        {
+          name: customerToDelete.name,
+          email: customerToDelete.email,
+          phone: customerToDelete.phone,
+          address: customerToDelete.address,
+        },
+        userId,
+      );
+
+      return deletedCustomer;
     } catch (error) {
+      // Log failed customer deletion
+      await this.logService.logError(
+        tenantId,
+        CUSTOMER_ACTIONS.DELETE,
+        RESOURCES.CUSTOMER,
+        error,
+        customerId,
+        userId,
+      );
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
           throw new NotFoundException(
