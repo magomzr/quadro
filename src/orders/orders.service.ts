@@ -185,16 +185,16 @@ export class OrdersService {
         tenantId,
         ORDER_ACTIONS.CREATE,
         RESOURCES.ORDER,
-        result.id,
+        result?.id,
         userId,
         {
-          customerName: result.customerName,
-          customerEmail: result.customerEmail,
-          itemCount: result.orderItems.length,
-          subtotal: result.subtotal,
-          total: result.total,
+          customerName: result?.customerName,
+          customerEmail: result?.customerEmail,
+          itemCount: result?.orderItems.length,
+          subtotal: result?.subtotal,
+          total: result?.total,
           discountCode: createOrderDto.discountCode,
-          discountAmount: result.discountAmount,
+          discountAmount: result?.discountAmount,
         },
       );
 
@@ -411,8 +411,6 @@ export class OrdersService {
           throw new NotFoundException(`Order with ID ${orderId} not found`);
         }
 
-        const originalStatus = order.status;
-
         // Si se cancela la orden, restaurar stock
         if (status === 'cancelled' && order.status !== 'cancelled') {
           for (const item of order.orderItems) {
@@ -455,7 +453,10 @@ export class OrdersService {
       });
 
       // Log successful order status update
-      const action = status === 'cancelled' ? ORDER_ACTIONS.CANCEL : ORDER_ACTIONS.STATUS_UPDATE;
+      const action =
+        status === 'cancelled'
+          ? ORDER_ACTIONS.CANCEL
+          : ORDER_ACTIONS.STATUS_UPDATE;
       await this.logService.logUpdate(
         tenantId,
         action,
@@ -464,8 +465,6 @@ export class OrdersService {
         { status: result.status },
         { status },
         userId,
-        undefined,
-        undefined,
       );
 
       // Log payment status if applicable
@@ -486,7 +485,10 @@ export class OrdersService {
       return result;
     } catch (error) {
       // Log failed order status update
-      const action = status === 'cancelled' ? ORDER_ACTIONS.CANCEL : ORDER_ACTIONS.STATUS_UPDATE;
+      const action =
+        status === 'cancelled'
+          ? ORDER_ACTIONS.CANCEL
+          : ORDER_ACTIONS.STATUS_UPDATE;
       await this.logService.logError(
         tenantId,
         action,
