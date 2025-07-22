@@ -7,6 +7,7 @@ import { CustomersModule } from './customers/customers.module';
 import { OrdersModule } from './orders/orders.module';
 import { DiscountsModule } from './discounts/discounts.module';
 import { LogService } from './shared/services/log.service';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { LogService } from './shared/services/log.service';
     CustomersModule,
     OrdersModule,
     DiscountsModule,
+    UsersModule,
   ],
   providers: [LogService],
 })
