@@ -6,12 +6,19 @@ import {
 import { Prisma } from 'generated/prisma';
 import { DatabaseService } from 'src/database/database.service';
 import { DiscountsService } from 'src/discounts/discounts.service';
+import { LogService } from 'src/shared/services/log.service';
+import {
+  ORDER_ACTIONS,
+  DISCOUNT_ACTIONS,
+  RESOURCES,
+} from 'src/shared/constants/log-actions.constants';
 
 @Injectable()
 export class OrdersService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly discountsService: DiscountsService,
+    private readonly logService: LogService,
   ) {}
 
   async create(
@@ -28,9 +35,10 @@ export class OrdersService {
         quantity: number;
       }>;
     },
+    userId?: string,
   ) {
     try {
-      return await this.databaseService.$transaction(async (tx) => {
+      const result = await this.databaseService.$transaction(async (tx) => {
         // 1. Validar que existan productos y calcular precios
         let subtotal = 0;
         const orderItemsData: any[] = [];
@@ -78,6 +86,7 @@ export class OrdersService {
               tenantId,
               createOrderDto.discountCode,
               subtotal,
+              userId,
             );
 
           if (!discountValidation.valid) {
@@ -88,6 +97,21 @@ export class OrdersService {
 
           discount = discountValidation.discount;
           discountAmount = discountValidation.discountAmount;
+
+          // Log discount application
+          await this.logService.logSuccess(
+            tenantId,
+            DISCOUNT_ACTIONS.APPLY,
+            RESOURCES.DISCOUNT,
+            discount.id,
+            userId,
+            {
+              discountCode: createOrderDto.discountCode,
+              orderSubtotal: subtotal,
+              discountAmount,
+              customerName: createOrderDto.customerName,
+            },
+          );
         }
 
         const total = subtotal - discountAmount;
@@ -155,7 +179,40 @@ export class OrdersService {
           },
         });
       });
+
+      // Log successful order creation
+      await this.logService.logSuccess(
+        tenantId,
+        ORDER_ACTIONS.CREATE,
+        RESOURCES.ORDER,
+        result.id,
+        userId,
+        {
+          customerName: result.customerName,
+          customerEmail: result.customerEmail,
+          itemCount: result.orderItems.length,
+          subtotal: result.subtotal,
+          total: result.total,
+          discountCode: createOrderDto.discountCode,
+          discountAmount: result.discountAmount,
+        },
+      );
+
+      return result;
     } catch (error) {
+      // Log failed order creation
+      await this.logService.logError(
+        tenantId,
+        ORDER_ACTIONS.CREATE,
+        RESOURCES.ORDER,
+        error,
+        undefined,
+        userId,
+        {
+          attemptedOrder: createOrderDto,
+        },
+      );
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2003') {
           throw new NotFoundException('Tenant or related entity not found');
@@ -258,9 +315,19 @@ export class OrdersService {
     tenantId: string,
     orderId: string,
     updateOrderDto: Prisma.OrderUpdateInput,
+    userId?: string,
   ) {
     try {
-      return await this.databaseService.order.update({
+      // Get original order data for logging
+      const originalOrder = await this.databaseService.order.findFirst({
+        where: { id: orderId, tenantId },
+      });
+
+      if (!originalOrder) {
+        throw new NotFoundException(`Order with ID ${orderId} not found`);
+      }
+
+      const updatedOrder = await this.databaseService.order.update({
         where: {
           id: orderId,
           tenantId,
@@ -276,7 +343,43 @@ export class OrdersService {
           discount: true,
         },
       });
+
+      // Log successful order update
+      await this.logService.logUpdate(
+        tenantId,
+        ORDER_ACTIONS.UPDATE,
+        RESOURCES.ORDER,
+        orderId,
+        {
+          customerName: originalOrder.customerName,
+          customerEmail: originalOrder.customerEmail,
+          status: originalOrder.status,
+          total: originalOrder.total,
+        },
+        {
+          customerName: updatedOrder.customerName,
+          customerEmail: updatedOrder.customerEmail,
+          status: updatedOrder.status,
+          total: updatedOrder.total,
+        },
+        userId,
+      );
+
+      return updatedOrder;
     } catch (error) {
+      // Log failed order update
+      await this.logService.logError(
+        tenantId,
+        ORDER_ACTIONS.UPDATE,
+        RESOURCES.ORDER,
+        error,
+        orderId,
+        userId,
+        {
+          attemptedData: updateOrderDto,
+        },
+      );
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
           throw new NotFoundException(`Order with ID ${orderId} not found`);
@@ -290,9 +393,10 @@ export class OrdersService {
     tenantId: string,
     orderId: string,
     status: 'pending' | 'paid' | 'cancelled',
+    userId?: string,
   ) {
     try {
-      return await this.databaseService.$transaction(async (tx) => {
+      const result = await this.databaseService.$transaction(async (tx) => {
         const order = await tx.order.findFirst({
           where: {
             id: orderId,
@@ -306,6 +410,8 @@ export class OrdersService {
         if (!order) {
           throw new NotFoundException(`Order with ID ${orderId} not found`);
         }
+
+        const originalStatus = order.status;
 
         // Si se cancela la orden, restaurar stock
         if (status === 'cancelled' && order.status !== 'cancelled') {
@@ -347,7 +453,50 @@ export class OrdersService {
           },
         });
       });
+
+      // Log successful order status update
+      const action = status === 'cancelled' ? ORDER_ACTIONS.CANCEL : ORDER_ACTIONS.STATUS_UPDATE;
+      await this.logService.logUpdate(
+        tenantId,
+        action,
+        RESOURCES.ORDER,
+        orderId,
+        { status: result.status },
+        { status },
+        userId,
+        undefined,
+        undefined,
+      );
+
+      // Log payment status if applicable
+      if (status === 'paid') {
+        await this.logService.logSuccess(
+          tenantId,
+          ORDER_ACTIONS.PAYMENT_SUCCESS,
+          RESOURCES.ORDER,
+          orderId,
+          userId,
+          {
+            customerName: result.customerName,
+            total: result.total,
+          },
+        );
+      }
+
+      return result;
     } catch (error) {
+      // Log failed order status update
+      const action = status === 'cancelled' ? ORDER_ACTIONS.CANCEL : ORDER_ACTIONS.STATUS_UPDATE;
+      await this.logService.logError(
+        tenantId,
+        action,
+        RESOURCES.ORDER,
+        error,
+        orderId,
+        userId,
+        { attemptedStatus: status },
+      );
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
           throw new NotFoundException(`Order with ID ${orderId} not found`);
@@ -357,7 +506,7 @@ export class OrdersService {
     }
   }
 
-  async cancel(tenantId: string, orderId: string) {
-    return this.updateStatus(tenantId, orderId, 'cancelled');
+  async cancel(tenantId: string, orderId: string, userId?: string) {
+    return this.updateStatus(tenantId, orderId, 'cancelled', userId);
   }
 }

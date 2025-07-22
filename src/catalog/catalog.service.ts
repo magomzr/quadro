@@ -5,17 +5,27 @@ import {
 } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { DatabaseService } from 'src/database/database.service';
+import { LogService } from 'src/shared/services/log.service';
+import {
+  CATEGORY_ACTIONS,
+  PRODUCT_ACTIONS,
+  RESOURCES,
+} from 'src/shared/constants/log-actions.constants';
 
 @Injectable()
 export class CatalogService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly logService: LogService,
+  ) {}
 
   async createCategory(
     tenantId: string,
     createCategoryDto: Prisma.CategoryCreateInput,
+    userId?: string,
   ) {
     try {
-      return await this.databaseService.category.create({
+      const category = await this.databaseService.category.create({
         data: {
           ...createCategoryDto,
           tenant: {
@@ -25,7 +35,35 @@ export class CatalogService {
           },
         },
       });
+
+      // Log successful category creation
+      await this.logService.logSuccess(
+        tenantId,
+        CATEGORY_ACTIONS.CREATE,
+        RESOURCES.CATEGORY,
+        category.id,
+        userId,
+        {
+          categoryName: category.name,
+          description: category.description,
+        },
+      );
+
+      return category;
     } catch (error) {
+      // Log failed category creation
+      await this.logService.logError(
+        tenantId,
+        CATEGORY_ACTIONS.CREATE,
+        RESOURCES.CATEGORY,
+        error,
+        undefined,
+        userId,
+        {
+          attemptedData: createCategoryDto,
+        },
+      );
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           throw new ConflictException(
@@ -93,9 +131,21 @@ export class CatalogService {
     tenantId: string,
     categoryId: string,
     updateCategoryDto: Prisma.CategoryUpdateInput,
+    userId?: string,
   ) {
     try {
-      return await this.databaseService.category.update({
+      // Get original category data for logging
+      const originalCategory = await this.databaseService.category.findFirst({
+        where: { id: categoryId, tenantId },
+      });
+
+      if (!originalCategory) {
+        throw new NotFoundException(
+          `Category with ID ${categoryId} not found`,
+        );
+      }
+
+      const updatedCategory = await this.databaseService.category.update({
         where: {
           id: categoryId,
         },
@@ -108,7 +158,39 @@ export class CatalogService {
           },
         },
       });
+
+      // Log successful category update with before/after data
+      await this.logService.logUpdate(
+        tenantId,
+        CATEGORY_ACTIONS.UPDATE,
+        RESOURCES.CATEGORY,
+        categoryId,
+        {
+          name: originalCategory.name,
+          description: originalCategory.description,
+        },
+        {
+          name: updatedCategory.name,
+          description: updatedCategory.description,
+        },
+        userId,
+      );
+
+      return updatedCategory;
     } catch (error) {
+      // Log failed category update
+      await this.logService.logError(
+        tenantId,
+        CATEGORY_ACTIONS.UPDATE,
+        RESOURCES.CATEGORY,
+        error,
+        categoryId,
+        userId,
+        {
+          attemptedData: updateCategoryDto,
+        },
+      );
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
           throw new NotFoundException(
@@ -125,7 +207,7 @@ export class CatalogService {
     }
   }
 
-  async removeCategory(tenantId: string, categoryId: string) {
+  async removeCategory(tenantId: string, categoryId: string, userId?: string) {
     try {
       const productsCount = await this.databaseService.product.count({
         where: {
@@ -140,12 +222,48 @@ export class CatalogService {
         );
       }
 
-      return await this.databaseService.category.delete({
+      // Get category data before deletion for logging
+      const categoryToDelete = await this.databaseService.category.findFirst({
+        where: { id: categoryId, tenantId },
+      });
+
+      if (!categoryToDelete) {
+        throw new NotFoundException(
+          `Category with ID ${categoryId} not found`,
+        );
+      }
+
+      const deletedCategory = await this.databaseService.category.delete({
         where: {
           id: categoryId,
         },
       });
+
+      // Log successful category deletion
+      await this.logService.logDelete(
+        tenantId,
+        CATEGORY_ACTIONS.DELETE,
+        RESOURCES.CATEGORY,
+        categoryId,
+        {
+          name: categoryToDelete.name,
+          description: categoryToDelete.description,
+        },
+        userId,
+      );
+
+      return deletedCategory;
     } catch (error) {
+      // Log failed category deletion
+      await this.logService.logError(
+        tenantId,
+        CATEGORY_ACTIONS.DELETE,
+        RESOURCES.CATEGORY,
+        error,
+        categoryId,
+        userId,
+      );
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
           throw new NotFoundException(
@@ -160,9 +278,10 @@ export class CatalogService {
   async createProduct(
     tenantId: string,
     createProductDto: Prisma.ProductCreateInput,
+    userId?: string,
   ) {
     try {
-      return await this.databaseService.product.create({
+      const product = await this.databaseService.product.create({
         data: {
           ...createProductDto,
           tenant: {
@@ -179,7 +298,38 @@ export class CatalogService {
           category: true,
         },
       });
+
+      // Log successful product creation
+      await this.logService.logSuccess(
+        tenantId,
+        PRODUCT_ACTIONS.CREATE,
+        RESOURCES.PRODUCT,
+        product.id,
+        userId,
+        {
+          productName: product.name,
+          sku: product.sku,
+          price: product.price,
+          stock: product.stock,
+          categoryName: product.category?.name,
+        },
+      );
+
+      return product;
     } catch (error) {
+      // Log failed product creation
+      await this.logService.logError(
+        tenantId,
+        PRODUCT_ACTIONS.CREATE,
+        RESOURCES.PRODUCT,
+        error,
+        undefined,
+        userId,
+        {
+          attemptedData: createProductDto,
+        },
+      );
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           throw new ConflictException(
@@ -281,9 +431,20 @@ export class CatalogService {
     tenantId: string,
     productId: string,
     updateProductDto: Prisma.ProductUpdateInput,
+    userId?: string,
   ) {
     try {
-      return await this.databaseService.product.update({
+      // Get original product data for logging
+      const originalProduct = await this.databaseService.product.findFirst({
+        where: { id: productId, tenantId },
+        include: { category: true },
+      });
+
+      if (!originalProduct) {
+        throw new NotFoundException(`Product with ID ${productId} not found`);
+      }
+
+      const updatedProduct = await this.databaseService.product.update({
         where: {
           id: productId,
         },
@@ -303,7 +464,49 @@ export class CatalogService {
           category: true,
         },
       });
+
+      // Log successful product update with before/after data
+      await this.logService.logUpdate(
+        tenantId,
+        PRODUCT_ACTIONS.UPDATE,
+        RESOURCES.PRODUCT,
+        productId,
+        {
+          name: originalProduct.name,
+          description: originalProduct.description,
+          price: originalProduct.price,
+          stock: originalProduct.stock,
+          sku: originalProduct.sku,
+          categoryName: originalProduct.category?.name,
+          isPublished: originalProduct.isPublished,
+        },
+        {
+          name: updatedProduct.name,
+          description: updatedProduct.description,
+          price: updatedProduct.price,
+          stock: updatedProduct.stock,
+          sku: updatedProduct.sku,
+          categoryName: updatedProduct.category?.name,
+          isPublished: updatedProduct.isPublished,
+        },
+        userId,
+      );
+
+      return updatedProduct;
     } catch (error) {
+      // Log failed product update
+      await this.logService.logError(
+        tenantId,
+        PRODUCT_ACTIONS.UPDATE,
+        RESOURCES.PRODUCT,
+        error,
+        productId,
+        userId,
+        {
+          attemptedData: updateProductDto,
+        },
+      );
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
           throw new NotFoundException(`Product with ID ${productId} not found`);
@@ -321,9 +524,18 @@ export class CatalogService {
     }
   }
 
-  async updateProductStock(tenantId: string, productId: string, stock: number) {
+  async updateProductStock(tenantId: string, productId: string, stock: number, userId?: string) {
     try {
-      return await this.databaseService.product.update({
+      // Get original stock for logging
+      const originalProduct = await this.databaseService.product.findFirst({
+        where: { id: productId, tenantId },
+      });
+
+      if (!originalProduct) {
+        throw new NotFoundException(`Product with ID ${productId} not found`);
+      }
+
+      const updatedProduct = await this.databaseService.product.update({
         where: {
           id: productId,
         },
@@ -339,7 +551,31 @@ export class CatalogService {
           category: true,
         },
       });
+
+      // Log stock update
+      await this.logService.logUpdate(
+        tenantId,
+        PRODUCT_ACTIONS.STOCK_UPDATE,
+        RESOURCES.PRODUCT,
+        productId,
+        { stock: originalProduct.stock },
+        { stock: updatedProduct.stock },
+        userId,
+      );
+
+      return updatedProduct;
     } catch (error) {
+      // Log failed stock update
+      await this.logService.logError(
+        tenantId,
+        PRODUCT_ACTIONS.STOCK_UPDATE,
+        RESOURCES.PRODUCT,
+        error,
+        productId,
+        userId,
+        { attemptedStock: stock },
+      );
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
           throw new NotFoundException(`Product with ID ${productId} not found`);
@@ -353,9 +589,19 @@ export class CatalogService {
     tenantId: string,
     productId: string,
     isPublished: boolean,
+    userId?: string,
   ) {
     try {
-      return await this.databaseService.product.update({
+      // Get original product for logging
+      const originalProduct = await this.databaseService.product.findFirst({
+        where: { id: productId, tenantId },
+      });
+
+      if (!originalProduct) {
+        throw new NotFoundException(`Product with ID ${productId} not found`);
+      }
+
+      const updatedProduct = await this.databaseService.product.update({
         where: {
           id: productId,
         },
@@ -371,7 +617,39 @@ export class CatalogService {
           category: true,
         },
       });
+
+      // Log publish/unpublish action
+      const action = isPublished ? PRODUCT_ACTIONS.PUBLISH : PRODUCT_ACTIONS.UNPUBLISH;
+      await this.logService.logUpdate(
+        tenantId,
+        action,
+        RESOURCES.PRODUCT,
+        productId,
+        { 
+          productName: originalProduct.name,
+          isPublished: originalProduct.isPublished 
+        },
+        { 
+          productName: updatedProduct.name,
+          isPublished: updatedProduct.isPublished 
+        },
+        userId,
+      );
+
+      return updatedProduct;
     } catch (error) {
+      // Log failed publish status update
+      const action = isPublished ? PRODUCT_ACTIONS.PUBLISH : PRODUCT_ACTIONS.UNPUBLISH;
+      await this.logService.logError(
+        tenantId,
+        action,
+        RESOURCES.PRODUCT,
+        error,
+        productId,
+        userId,
+        { attemptedStatus: isPublished },
+      );
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
           throw new NotFoundException(`Product with ID ${productId} not found`);
@@ -381,7 +659,7 @@ export class CatalogService {
     }
   }
 
-  async removeProduct(tenantId: string, productId: string) {
+  async removeProduct(tenantId: string, productId: string, userId?: string) {
     try {
       // Verificar si el producto tiene órdenes asociadas
       const orderItemsCount = await this.databaseService.orderItem.count({
@@ -397,12 +675,51 @@ export class CatalogService {
         );
       }
 
-      return await this.databaseService.product.delete({
+      // Get product data before deletion for logging
+      const productToDelete = await this.databaseService.product.findFirst({
+        where: { id: productId, tenantId },
+        include: { category: true },
+      });
+
+      if (!productToDelete) {
+        throw new NotFoundException(`Product with ID ${productId} not found`);
+      }
+
+      const deletedProduct = await this.databaseService.product.delete({
         where: {
           id: productId,
         },
       });
+
+      // Log successful product deletion
+      await this.logService.logDelete(
+        tenantId,
+        PRODUCT_ACTIONS.DELETE,
+        RESOURCES.PRODUCT,
+        productId,
+        {
+          name: productToDelete.name,
+          sku: productToDelete.sku,
+          price: productToDelete.price,
+          stock: productToDelete.stock,
+          categoryName: productToDelete.category?.name,
+          isPublished: productToDelete.isPublished,
+        },
+        userId,
+      );
+
+      return deletedProduct;
     } catch (error) {
+      // Log failed product deletion
+      await this.logService.logError(
+        tenantId,
+        PRODUCT_ACTIONS.DELETE,
+        RESOURCES.PRODUCT,
+        error,
+        productId,
+        userId,
+      );
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
           throw new NotFoundException(`Product with ID ${productId} not found`);
