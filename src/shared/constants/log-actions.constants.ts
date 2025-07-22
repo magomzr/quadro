@@ -3,6 +3,15 @@
  * These provide consistent messaging for different business operations
  */
 
+// Auth actions
+export const AUTH_ACTIONS = {
+  LOGIN: 'AUTH_LOGIN',
+  LOGOUT: 'AUTH_LOGOUT',
+  REFRESH_TOKEN: 'AUTH_REFRESH_TOKEN',
+  FORGOT_PASSWORD: 'AUTH_FORGOT_PASSWORD',
+  RESET_PASSWORD: 'AUTH_RESET_PASSWORD',
+} as const;
+
 // Product actions
 export const PRODUCT_ACTIONS = {
   CREATE: 'PRODUCT_CREATE',
@@ -147,6 +156,7 @@ export const LOG_MESSAGES = {
 
   // System messages
   [SYSTEM_ACTIONS.DATABASE_ERROR]: 'Database error occurred',
-  [SYSTEM_ACTIONS.PAYMENT_GATEWAY_ERROR]: 'Failed to connect to payment gateway',
+  [SYSTEM_ACTIONS.PAYMENT_GATEWAY_ERROR]:
+    'Failed to connect to payment gateway',
   [SYSTEM_ACTIONS.EXTERNAL_SERVICE_ERROR]: 'External service error',
 } as const;

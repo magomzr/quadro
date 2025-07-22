@@ -84,22 +84,6 @@ export class UsersController {
     return this.usersService.updatePassword(tenantId, userId, body.password);
   }
 
-  @Post('forgot-password')
-  forgotPassword(
-    @Param('tenantId', ParseUUIDPipe) tenantId: string,
-    @Body() body: { email: string },
-  ) {
-    return this.usersService.generatePasswordResetToken(tenantId, body.email);
-  }
-
-  @Post('reset-password')
-  resetPassword(
-    @Param('tenantId', ParseUUIDPipe) tenantId: string,
-    @Body() body: { token: string; password: string },
-  ) {
-    return this.usersService.resetPassword(tenantId, body.token, body.password);
-  }
-
   @Delete(':userId')
   @HttpCode(HttpStatus.OK)
   remove(

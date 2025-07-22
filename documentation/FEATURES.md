@@ -304,3 +304,29 @@
 - UUIDs obligatorios para identificadores
 - Respuestas consistentes con metadatos de paginación
 - Manejo de errores estandarizado con códigos
+
+---
+
+✅ Autenticación completa
+Login con email/password
+Tokens JWT (access: 15min, refresh: 7 días)
+Refresh token automático
+Logout con logging
+✅ Reset de contraseña
+Movido desde UsersService a AuthService
+Generación de tokens seguros
+Validación de expiración
+Logging completo
+✅ Seguridad robusta
+Validación de usuario activo
+Hash de contraseñas con bcrypt
+Tokens con expiración apropiada
+Logging de intentos fallidos
+✅ Guards y estrategias
+JwtStrategy para validar tokens
+JwtAuthGuard para proteger endpoints
+Integración con Passport
+✅ Logging de auditoría
+Todos los eventos de auth logueados
+IP y User-Agent capturados
+Diferenciación entre éxito y error
