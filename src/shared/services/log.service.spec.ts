@@ -69,6 +69,37 @@ describe('LogService', () => {
         },
       });
     });
+
+    it('should handle undefined metadata correctly', async () => {
+      const mockLog = {
+        id: 'log-id',
+        tenantId: 'tenant-id',
+        action: PRODUCT_ACTIONS.CREATE,
+        resource: RESOURCES.PRODUCT,
+        createdAt: new Date(),
+      };
+
+      mockDatabaseService.log.create.mockResolvedValue(mockLog);
+
+      await service.logSuccess(
+        'tenant-id',
+        PRODUCT_ACTIONS.CREATE,
+        RESOURCES.PRODUCT,
+      );
+
+      expect(mockDatabaseService.log.create).toHaveBeenCalledWith({
+        data: {
+          tenantId: 'tenant-id',
+          userId: null,
+          action: PRODUCT_ACTIONS.CREATE,
+          resource: RESOURCES.PRODUCT,
+          resourceId: null,
+          metadata: undefined,
+          ipAddress: null,
+          userAgent: null,
+        },
+      });
+    });
   });
 
   describe('logError', () => {

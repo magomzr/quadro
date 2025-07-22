@@ -19,7 +19,7 @@ export class LogService {
           action: logData.action,
           resource: logData.resource,
           resourceId: logData.resourceId || null,
-          metadata: logData.metadata || null,
+          metadata: logData.metadata,
           ipAddress: logData.ipAddress || null,
           userAgent: logData.userAgent || null,
         },
