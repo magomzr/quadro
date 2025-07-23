@@ -12,11 +12,14 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
+  Req,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthTenantGuard } from 'src/shared/guards/auth-tenant.guard';
 import { RolesGuard } from 'src/shared/guards/roles.guard';
 import { Roles } from 'src/shared/decorators/roles.decorator';
+import { Request } from 'express';
 
 @Controller({
   path: 'tenants/:tenantId/users',
@@ -89,8 +92,14 @@ export class UsersController {
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('userId', ParseUUIDPipe) userId: string,
     @Body() body: { password: string },
+    @Req() req: Request & { user: any },
   ) {
-    // TODO: Para los staffs, esto sólo lo pueden hacer con sus propios usuarios.
+    const { user } = req;
+    if (user.role === 'staff' && user.id !== userId) {
+      throw new ForbiddenException(
+        'Staff users can only change their own password',
+      );
+    }
     return this.usersService.updatePassword(tenantId, userId, body.password);
   }
 
