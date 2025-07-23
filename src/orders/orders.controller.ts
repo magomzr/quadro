@@ -11,9 +11,13 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { OrdersService } from './orders.service';
+import { AuthTenantGuard } from 'src/shared/guards/auth-tenant.guard';
+import { RolesGuard } from 'src/shared/guards/roles.guard';
+import { Roles } from 'src/shared/decorators/roles.decorator';
 
 @Controller({
   path: 'tenants/:tenantId/orders',
@@ -73,6 +77,7 @@ export class OrdersController {
   }
 
   @Patch(':orderId')
+  @UseGuards(AuthTenantGuard)
   update(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('orderId', ParseUUIDPipe) orderId: string,
@@ -82,6 +87,7 @@ export class OrdersController {
   }
 
   @Patch(':orderId/status')
+  @UseGuards(AuthTenantGuard)
   updateStatus(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('orderId', ParseUUIDPipe) orderId: string,
@@ -92,6 +98,8 @@ export class OrdersController {
 
   @Delete(':orderId')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthTenantGuard, RolesGuard)
+  @Roles('admin')
   cancel(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('orderId', ParseUUIDPipe) orderId: string,

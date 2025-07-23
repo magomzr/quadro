@@ -9,6 +9,7 @@ import { DiscountsModule } from './discounts/discounts.module';
 import { LogService } from './shared/services/log.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { GuardsModule } from './shared/guards/guards.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AuthModule } from './auth/auth.module';
     DiscountsModule,
     UsersModule,
     AuthModule,
+    GuardsModule,
   ],
   providers: [LogService],
 })

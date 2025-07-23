@@ -11,9 +11,13 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { DiscountsService } from './discounts.service';
+import { AuthTenantGuard } from 'src/shared/guards/auth-tenant.guard';
+import { RolesGuard } from 'src/shared/guards/roles.guard';
+import { Roles } from 'src/shared/decorators/roles.decorator';
 
 @Controller({
   path: 'tenants/:tenantId/discounts',
@@ -24,6 +28,8 @@ export class DiscountsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @UseGuards(AuthTenantGuard, RolesGuard)
+  @Roles('admin')
   create(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Body() createDiscountDto: Prisma.DiscountCreateInput,
@@ -32,6 +38,7 @@ export class DiscountsController {
   }
 
   @Get()
+  @UseGuards(AuthTenantGuard)
   findAll(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Query('page', new ParseIntPipe({ optional: true })) page: number = 1,
@@ -46,6 +53,7 @@ export class DiscountsController {
   }
 
   @Get(':discountId')
+  @UseGuards(AuthTenantGuard)
   findOne(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('discountId', ParseUUIDPipe) discountId: string,
@@ -54,6 +62,8 @@ export class DiscountsController {
   }
 
   @Patch(':discountId')
+  @UseGuards(AuthTenantGuard, RolesGuard)
+  @Roles('admin')
   update(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('discountId', ParseUUIDPipe) discountId: string,
@@ -68,6 +78,8 @@ export class DiscountsController {
 
   @Delete(':discountId')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthTenantGuard, RolesGuard)
+  @Roles('admin')
   remove(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('discountId', ParseUUIDPipe) discountId: string,
@@ -92,6 +104,7 @@ export class DiscountsController {
   }
 
   @Get(':discountId/stats')
+  @UseGuards(AuthTenantGuard)
   getStats(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('discountId', ParseUUIDPipe) discountId: string,

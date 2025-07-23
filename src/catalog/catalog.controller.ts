@@ -12,9 +12,13 @@ import {
   ParseIntPipe,
   ParseBoolPipe,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { CatalogService } from './catalog.service';
+import { AuthTenantGuard } from 'src/shared/guards/auth-tenant.guard';
+import { RolesGuard } from 'src/shared/guards/roles.guard';
+import { Roles } from 'src/shared/decorators/roles.decorator';
 
 @Controller({
   path: 'tenants/:tenantId/catalog',
@@ -25,6 +29,7 @@ export class CatalogController {
 
   @Post('categories')
   @HttpCode(HttpStatus.CREATED)
+  @UseGuards(AuthTenantGuard)
   createCategory(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Body() createCategoryDto: Prisma.CategoryCreateInput,
@@ -50,6 +55,7 @@ export class CatalogController {
   }
 
   @Patch('categories/:categoryId')
+  @UseGuards(AuthTenantGuard)
   updateCategory(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('categoryId', ParseUUIDPipe) categoryId: string,
@@ -64,6 +70,8 @@ export class CatalogController {
 
   @Delete('categories/:categoryId')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthTenantGuard, RolesGuard)
+  @Roles('admin')
   removeCategory(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('categoryId', ParseUUIDPipe) categoryId: string,
@@ -73,6 +81,7 @@ export class CatalogController {
 
   @Post('products')
   @HttpCode(HttpStatus.CREATED)
+  @UseGuards(AuthTenantGuard)
   createProduct(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Body() createProductDto: Prisma.ProductCreateInput,
@@ -112,6 +121,7 @@ export class CatalogController {
   }
 
   @Patch('products/:productId')
+  @UseGuards(AuthTenantGuard)
   updateProduct(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('productId', ParseUUIDPipe) productId: string,
@@ -125,6 +135,7 @@ export class CatalogController {
   }
 
   @Patch('products/:productId/stock')
+  @UseGuards(AuthTenantGuard)
   updateProductStock(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('productId', ParseUUIDPipe) productId: string,
@@ -134,6 +145,7 @@ export class CatalogController {
   }
 
   @Patch('products/:productId/publish')
+  @UseGuards(AuthTenantGuard)
   updateProductPublishStatus(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('productId', ParseUUIDPipe) productId: string,
@@ -148,6 +160,8 @@ export class CatalogController {
 
   @Delete('products/:productId')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthTenantGuard, RolesGuard)
+  @Roles('admin')
   removeProduct(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('productId', ParseUUIDPipe) productId: string,

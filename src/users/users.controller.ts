@@ -11,18 +11,24 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { AuthTenantGuard } from 'src/shared/guards/auth-tenant.guard';
+import { RolesGuard } from 'src/shared/guards/roles.guard';
+import { Roles } from 'src/shared/decorators/roles.decorator';
 
 @Controller({
   path: 'tenants/:tenantId/users',
   version: '1',
 })
+@UseGuards(AuthTenantGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @Roles('admin')
   create(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Body()
@@ -37,6 +43,7 @@ export class UsersController {
   }
 
   @Get()
+  @Roles('admin')
   findAll(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Query('page', new ParseIntPipe({ optional: true })) page: number = 1,
@@ -53,6 +60,7 @@ export class UsersController {
   }
 
   @Get(':userId')
+  @Roles('admin')
   findOne(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('userId', ParseUUIDPipe) userId: string,
@@ -61,6 +69,7 @@ export class UsersController {
   }
 
   @Patch(':userId')
+  @Roles('admin')
   update(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('userId', ParseUUIDPipe) userId: string,
@@ -81,11 +90,13 @@ export class UsersController {
     @Param('userId', ParseUUIDPipe) userId: string,
     @Body() body: { password: string },
   ) {
+    // TODO: Para los staffs, esto sólo lo pueden hacer con sus propios usuarios.
     return this.usersService.updatePassword(tenantId, userId, body.password);
   }
 
   @Delete(':userId')
   @HttpCode(HttpStatus.OK)
+  @Roles('admin')
   remove(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('userId', ParseUUIDPipe) userId: string,

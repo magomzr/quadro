@@ -7,6 +7,7 @@ import { JwtStrategy } from 'src/shared/strategies/jwt.strategy';
 import { DatabaseModule } from 'src/database/database.module';
 import { UsersModule } from 'src/users/users.module';
 import { LogService } from 'src/shared/services/log.service';
+import { GuardsModule } from 'src/shared/guards/guards.module';
 
 @Module({
   imports: [
@@ -17,9 +18,10 @@ import { LogService } from 'src/shared/services/log.service';
       secret: process.env.JWT_SECRET || 'your-secret-key',
       signOptions: { expiresIn: '15m' },
     }),
+    GuardsModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, LogService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, LogService],
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

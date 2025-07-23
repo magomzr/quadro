@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { DatabaseService } from 'src/database/database.service';
 import { UsersService } from 'src/users/users.service';
 import { LogService } from 'src/shared/services/log.service';
 import {
@@ -24,7 +23,6 @@ export interface JwtPayload {
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly databaseService: DatabaseService,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly logService: LogService,

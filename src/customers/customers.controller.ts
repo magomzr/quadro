@@ -11,9 +11,13 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { CustomersService } from './customers.service';
+import { AuthTenantGuard } from 'src/shared/guards/auth-tenant.guard';
+import { RolesGuard } from 'src/shared/guards/roles.guard';
+import { Roles } from 'src/shared/decorators/roles.decorator';
 
 @Controller({
   path: 'tenants/:tenantId/customers',
@@ -32,6 +36,7 @@ export class CustomersController {
   }
 
   @Get()
+  @UseGuards(AuthTenantGuard)
   findAll(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Query('page', new ParseIntPipe({ optional: true })) page: number = 1,
@@ -64,6 +69,8 @@ export class CustomersController {
 
   @Delete(':customerId')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthTenantGuard, RolesGuard)
+  @Roles('admin')
   remove(
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
     @Param('customerId', ParseUUIDPipe) customerId: string,
