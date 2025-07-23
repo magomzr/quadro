@@ -5,6 +5,7 @@ This document describes the comprehensive audit logging system implemented in Qu
 ## Overview
 
 The logging system captures all major business operations including:
+
 - CRUD operations on products, categories, customers, discounts, orders, tenants, and settings
 - User actions with before/after data for updates and deletions
 - Error events with context for debugging
@@ -13,7 +14,8 @@ The logging system captures all major business operations including:
 ## Architecture
 
 ### LogService
-The main service (`src/shared/services/log.service.ts`) provides methods for creating different types of audit logs:
+
+The main service (`src/logger/logger.service.ts`) provides methods for creating different types of audit logs:
 
 - `logSuccess()` - For successful operations
 - `logError()` - For failed operations with error details
@@ -21,6 +23,7 @@ The main service (`src/shared/services/log.service.ts`) provides methods for cre
 - `logDelete()` - For deletions with preserved data
 
 ### Log Actions Constants
+
 Standardized action codes and messages are defined in `src/shared/constants/log-actions.constants.ts`:
 
 - `PRODUCT_ACTIONS`: CREATE, UPDATE, DELETE, STOCK_UPDATE, PUBLISH, UNPUBLISH
@@ -34,6 +37,7 @@ Standardized action codes and messages are defined in `src/shared/constants/log-
 ## Database Schema
 
 The `Log` model in `schema.prisma` includes:
+
 - `id`: Unique identifier
 - `tenantId`: Tenant context
 - `userId`: User who performed the action (optional)
@@ -48,25 +52,42 @@ The `Log` model in `schema.prisma` includes:
 ## Usage Examples
 
 ### Product Operations
+
 ```typescript
 // Product creation
 await this.catalogService.createProduct(tenantId, productData, userId);
 // Logs: "PRODUCT_CREATE" with product details
 
 // Product update
-await this.catalogService.updateProduct(tenantId, productId, updateData, userId);
+await this.catalogService.updateProduct(
+  tenantId,
+  productId,
+  updateData,
+  userId,
+);
 // Logs: "PRODUCT_UPDATE" with before/after data
 
 // Stock update
-await this.catalogService.updateProductStock(tenantId, productId, newStock, userId);
+await this.catalogService.updateProductStock(
+  tenantId,
+  productId,
+  newStock,
+  userId,
+);
 // Logs: "PRODUCT_STOCK_UPDATE" with stock change
 
 // Publish/Unpublish
-await this.catalogService.updateProductPublishStatus(tenantId, productId, true, userId);
+await this.catalogService.updateProductPublishStatus(
+  tenantId,
+  productId,
+  true,
+  userId,
+);
 // Logs: "PRODUCT_PUBLISH" or "PRODUCT_UNPUBLISH"
 ```
 
 ### Order Operations
+
 ```typescript
 // Order creation
 await this.ordersService.create(tenantId, orderData, userId);
@@ -80,13 +101,19 @@ await this.ordersService.updateStatus(tenantId, orderId, 'paid', userId);
 ```
 
 ### Discount Operations
+
 ```typescript
 // Discount creation
 await this.discountsService.create(tenantId, discountData, userId);
 // Logs: "DISCOUNT_CREATE" with discount details (% or fixed amount)
 
 // Validation
-await this.discountsService.validateDiscountCode(tenantId, code, orderAmount, userId);
+await this.discountsService.validateDiscountCode(
+  tenantId,
+  code,
+  orderAmount,
+  userId,
+);
 // Logs: "DISCOUNT_VALIDATE" for successful validation
 // Logs: "DISCOUNT_VALIDATE_FAILED" for invalid codes
 ```
@@ -94,6 +121,7 @@ await this.discountsService.validateDiscountCode(tenantId, code, orderAmount, us
 ## Log Metadata Examples
 
 ### Product Update Log
+
 ```json
 {
   "before": {
@@ -103,7 +131,7 @@ await this.discountsService.validateDiscountCode(tenantId, code, orderAmount, us
     "isPublished": false
   },
   "after": {
-    "name": "New Product Name", 
+    "name": "New Product Name",
     "price": 89.99,
     "stock": 15,
     "isPublished": true
@@ -112,27 +140,29 @@ await this.discountsService.validateDiscountCode(tenantId, code, orderAmount, us
 ```
 
 ### Discount Application Log
+
 ```json
 {
   "discountCode": "SAVE20",
   "discountType": "percentage",
   "discountValue": 20,
-  "orderSubtotal": 100.00,
-  "discountAmount": 20.00,
+  "orderSubtotal": 100.0,
+  "discountAmount": 20.0,
   "customerName": "John Doe"
 }
 ```
 
 ### Order Creation Log
+
 ```json
 {
   "customerName": "Jane Smith",
   "customerEmail": "jane@example.com",
   "itemCount": 3,
-  "subtotal": 150.00,
-  "total": 135.00,
+  "subtotal": 150.0,
+  "total": 135.0,
   "discountCode": "SAVE10",
-  "discountAmount": 15.00
+  "discountAmount": 15.0
 }
 ```
 
@@ -156,10 +186,13 @@ All failed operations are automatically logged with error context:
 ## Integration Points
 
 ### Service Layer
+
 All service methods have been updated to include optional `userId` parameter and automatic logging.
 
 ### Module Configuration
+
 Each module includes the `LogService` provider:
+
 ```typescript
 @Module({
   providers: [SomeService, LogService],
@@ -167,7 +200,9 @@ Each module includes the `LogService` provider:
 ```
 
 ### Controller Integration
+
 Controllers should pass user information when available:
+
 ```typescript
 @Post()
 async createProduct(

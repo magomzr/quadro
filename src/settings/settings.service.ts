@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { DatabaseService } from 'src/database/database.service';
-import { LogService } from 'src/shared/services/log.service';
+import { LoggerService } from 'src/logger/logger.service';
 import {
   SETTINGS_ACTIONS,
   RESOURCES,
@@ -15,7 +15,7 @@ import {
 export class SettingsService {
   constructor(
     private readonly databaseService: DatabaseService,
-    private readonly logService: LogService,
+    private readonly logService: LoggerService,
   ) {}
 
   async createSettings(

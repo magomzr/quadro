@@ -6,7 +6,7 @@ import {
 import { Prisma } from 'generated/prisma';
 import { DatabaseService } from 'src/database/database.service';
 import { DEFAULT_SETTINGS } from 'src/shared/configs/default-settings';
-import { LogService } from 'src/shared/services/log.service';
+import { LoggerService } from 'src/logger/logger.service';
 import {
   TENANT_ACTIONS,
   SETTINGS_ACTIONS,
@@ -17,7 +17,7 @@ import {
 export class TenantsService {
   constructor(
     private readonly databaseService: DatabaseService,
-    private readonly logService: LogService,
+    private readonly logService: LoggerService,
   ) {}
 
   async create(createTenantDto: Prisma.TenantCreateInput, userId?: string) {
@@ -121,7 +121,11 @@ export class TenantsService {
     return tenant;
   }
 
-  async update(id: string, updateTenantDto: Prisma.TenantUpdateInput, userId?: string) {
+  async update(
+    id: string,
+    updateTenantDto: Prisma.TenantUpdateInput,
+    userId?: string,
+  ) {
     try {
       // Get original tenant data for logging
       const originalTenant = await this.databaseService.tenant.findUnique({

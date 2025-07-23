@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { DatabaseService } from 'src/database/database.service';
-import { LogService } from 'src/shared/services/log.service';
+import { LoggerService } from 'src/logger/logger.service';
 import {
   DISCOUNT_ACTIONS,
   RESOURCES,
@@ -15,7 +15,7 @@ import {
 export class DiscountsService {
   constructor(
     private readonly databaseService: DatabaseService,
-    private readonly logService: LogService,
+    private readonly logService: LoggerService,
   ) {}
 
   async create(
@@ -147,9 +147,7 @@ export class DiscountsService {
       });
 
       if (!originalDiscount) {
-        throw new NotFoundException(
-          `Discount with ID ${discountId} not found`,
-        );
+        throw new NotFoundException(`Discount with ID ${discountId} not found`);
       }
 
       const updatedDiscount = await this.databaseService.discount.update({
@@ -236,9 +234,7 @@ export class DiscountsService {
       });
 
       if (!discountToDelete) {
-        throw new NotFoundException(
-          `Discount with ID ${discountId} not found`,
-        );
+        throw new NotFoundException(`Discount with ID ${discountId} not found`);
       }
 
       const deletedDiscount = await this.databaseService.discount.delete({

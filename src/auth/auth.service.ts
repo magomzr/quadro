@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
-import { LogService } from 'src/shared/services/log.service';
+import { LoggerService } from 'src/logger/logger.service';
 import {
   AUTH_ACTIONS,
   RESOURCES,
@@ -25,7 +25,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    private readonly logService: LogService,
+    private readonly logService: LoggerService,
   ) {}
 
   async login(

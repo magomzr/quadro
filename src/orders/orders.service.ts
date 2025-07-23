@@ -6,7 +6,7 @@ import {
 import { Prisma } from 'generated/prisma';
 import { DatabaseService } from 'src/database/database.service';
 import { DiscountsService } from 'src/discounts/discounts.service';
-import { LogService } from 'src/shared/services/log.service';
+import { LoggerService } from 'src/logger/logger.service';
 import {
   ORDER_ACTIONS,
   DISCOUNT_ACTIONS,
@@ -18,7 +18,7 @@ export class OrdersService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly discountsService: DiscountsService,
-    private readonly logService: LogService,
+    private readonly logService: LoggerService,
   ) {}
 
   async create(

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { Log } from '../interfaces/log.interface';
+import { Log } from '../shared/interfaces/log.interface';
+import { Prisma } from 'generated/prisma';
 
 @Injectable()
-export class LogService {
+export class LoggerService {
   constructor(private readonly databaseService: DatabaseService) {}
 
   /**
@@ -28,6 +29,105 @@ export class LogService {
       // Log the error but don't throw to avoid disrupting business operations
       console.error('Failed to create audit log:', error);
     }
+  }
+
+  /**
+   * Find all logs by tenant with optional filters
+   */
+  async findAllByTenant(
+    tenantId: string,
+    filters: {
+      action?: string;
+      resource?: string;
+      userId?: string;
+      fromDate?: Date;
+      toDate?: Date;
+    } = {},
+  ) {
+    const where: Prisma.LogWhereInput = {
+      tenantId,
+      ...(filters.action && {
+        action: { contains: filters.action, mode: 'insensitive' },
+      }),
+      ...(filters.resource && { resource: filters.resource }),
+      ...(filters.userId && { userId: filters.userId }),
+      ...(filters.fromDate && { createdAt: { gte: filters.fromDate } }),
+      ...(filters.toDate && { createdAt: { lte: filters.toDate } }),
+    };
+
+    return this.databaseService.log.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * Find paginated logs by tenant with optional filters
+   */
+  async findPaginatedByTenant(
+    tenantId: string,
+    page = 1,
+    limit = 20,
+    filters: {
+      action?: string;
+      resource?: string;
+      userId?: string;
+      fromDate?: Date;
+      toDate?: Date;
+    } = {},
+  ) {
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.LogWhereInput = {
+      tenantId,
+      ...(filters.action && {
+        action: { contains: filters.action, mode: 'insensitive' },
+      }),
+      ...(filters.resource && { resource: filters.resource }),
+      ...(filters.userId && { userId: filters.userId }),
+      ...(filters.fromDate && { createdAt: { gte: filters.fromDate } }),
+      ...(filters.toDate && { createdAt: { lte: filters.toDate } }),
+    };
+
+    const [logs, total] = await Promise.all([
+      this.databaseService.log.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+            },
+          },
+        },
+      }),
+      this.databaseService.log.count({ where }),
+    ]);
+
+    return {
+      data: logs,
+      meta: {
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalItems: total,
+        itemsPerPage: limit,
+        hasNextPage: page * limit < total,
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   /**

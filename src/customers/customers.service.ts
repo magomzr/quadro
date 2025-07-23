@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { DatabaseService } from 'src/database/database.service';
-import { LogService } from 'src/shared/services/log.service';
+import { LoggerService } from 'src/logger/logger.service';
 import {
   CUSTOMER_ACTIONS,
   RESOURCES,
@@ -15,7 +15,7 @@ import {
 export class CustomersService {
   constructor(
     private readonly databaseService: DatabaseService,
-    private readonly logService: LogService,
+    private readonly logService: LoggerService,
   ) {}
 
   async create(
@@ -149,9 +149,7 @@ export class CustomersService {
       });
 
       if (!originalCustomer) {
-        throw new NotFoundException(
-          `Customer with ID ${customerId} not found`,
-        );
+        throw new NotFoundException(`Customer with ID ${customerId} not found`);
       }
 
       const updatedCustomer = await this.databaseService.customer.update({
@@ -236,9 +234,7 @@ export class CustomersService {
       });
 
       if (!customerToDelete) {
-        throw new NotFoundException(
-          `Customer with ID ${customerId} not found`,
-        );
+        throw new NotFoundException(`Customer with ID ${customerId} not found`);
       }
 
       const deletedCustomer = await this.databaseService.customer.delete({

@@ -6,7 +6,7 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from 'src/shared/strategies/jwt.strategy';
 import { DatabaseModule } from 'src/database/database.module';
 import { UsersModule } from 'src/users/users.module';
-import { LogService } from 'src/shared/services/log.service';
+import { LoggerService } from 'src/logger/logger.service';
 import { GuardsModule } from 'src/shared/guards/guards.module';
 
 @Module({
@@ -21,7 +21,7 @@ import { GuardsModule } from 'src/shared/guards/guards.module';
     GuardsModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, LogService],
+  providers: [AuthService, JwtStrategy, LoggerService],
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

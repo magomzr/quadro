@@ -1,10 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { LogService } from './log.service';
+import { LoggerService } from './logger.service';
 import { DatabaseService } from 'src/database/database.service';
-import { PRODUCT_ACTIONS, RESOURCES } from '../constants/log-actions.constants';
+import {
+  PRODUCT_ACTIONS,
+  RESOURCES,
+} from '../shared/constants/log-actions.constants';
 
-describe('LogService', () => {
-  let service: LogService;
+describe('LoggerService', () => {
+  let service: LoggerService;
   let databaseService: DatabaseService;
 
   const mockDatabaseService = {
@@ -16,7 +19,7 @@ describe('LogService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        LogService,
+        LoggerService,
         {
           provide: DatabaseService,
           useValue: mockDatabaseService,
@@ -24,8 +27,7 @@ describe('LogService', () => {
       ],
     }).compile();
 
-    service = module.get<LogService>(LogService);
-    databaseService = module.get<DatabaseService>(DatabaseService);
+    service = module.get<LoggerService>(LoggerService);
   });
 
   it('should be defined', () => {
@@ -241,7 +243,7 @@ describe('LogService', () => {
   describe('error handling', () => {
     it('should not throw when database log creation fails', async () => {
       mockDatabaseService.log.create.mockRejectedValue(new Error('DB Error'));
-      
+
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
       await expect(
@@ -252,8 +254,11 @@ describe('LogService', () => {
         ),
       ).resolves.not.toThrow();
 
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to create audit log:', expect.any(Error));
-      
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Failed to create audit log:',
+        expect.any(Error),
+      );
+
       consoleSpy.mockRestore();
     });
   });

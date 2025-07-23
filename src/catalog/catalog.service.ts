@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { DatabaseService } from 'src/database/database.service';
-import { LogService } from 'src/shared/services/log.service';
+import { LoggerService } from 'src/logger/logger.service';
 import {
   CATEGORY_ACTIONS,
   PRODUCT_ACTIONS,
@@ -16,7 +16,7 @@ import {
 export class CatalogService {
   constructor(
     private readonly databaseService: DatabaseService,
-    private readonly logService: LogService,
+    private readonly logService: LoggerService,
   ) {}
 
   async createCategory(
@@ -140,9 +140,7 @@ export class CatalogService {
       });
 
       if (!originalCategory) {
-        throw new NotFoundException(
-          `Category with ID ${categoryId} not found`,
-        );
+        throw new NotFoundException(`Category with ID ${categoryId} not found`);
       }
 
       const updatedCategory = await this.databaseService.category.update({
@@ -228,9 +226,7 @@ export class CatalogService {
       });
 
       if (!categoryToDelete) {
-        throw new NotFoundException(
-          `Category with ID ${categoryId} not found`,
-        );
+        throw new NotFoundException(`Category with ID ${categoryId} not found`);
       }
 
       const deletedCategory = await this.databaseService.category.delete({
@@ -524,7 +520,12 @@ export class CatalogService {
     }
   }
 
-  async updateProductStock(tenantId: string, productId: string, stock: number, userId?: string) {
+  async updateProductStock(
+    tenantId: string,
+    productId: string,
+    stock: number,
+    userId?: string,
+  ) {
     try {
       // Get original stock for logging
       const originalProduct = await this.databaseService.product.findFirst({
@@ -619,19 +620,21 @@ export class CatalogService {
       });
 
       // Log publish/unpublish action
-      const action = isPublished ? PRODUCT_ACTIONS.PUBLISH : PRODUCT_ACTIONS.UNPUBLISH;
+      const action = isPublished
+        ? PRODUCT_ACTIONS.PUBLISH
+        : PRODUCT_ACTIONS.UNPUBLISH;
       await this.logService.logUpdate(
         tenantId,
         action,
         RESOURCES.PRODUCT,
         productId,
-        { 
+        {
           productName: originalProduct.name,
-          isPublished: originalProduct.isPublished 
+          isPublished: originalProduct.isPublished,
         },
-        { 
+        {
           productName: updatedProduct.name,
-          isPublished: updatedProduct.isPublished 
+          isPublished: updatedProduct.isPublished,
         },
         userId,
       );
@@ -639,7 +642,9 @@ export class CatalogService {
       return updatedProduct;
     } catch (error) {
       // Log failed publish status update
-      const action = isPublished ? PRODUCT_ACTIONS.PUBLISH : PRODUCT_ACTIONS.UNPUBLISH;
+      const action = isPublished
+        ? PRODUCT_ACTIONS.PUBLISH
+        : PRODUCT_ACTIONS.UNPUBLISH;
       await this.logService.logError(
         tenantId,
         action,
