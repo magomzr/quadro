@@ -139,53 +139,46 @@ export class AuthService {
   }
 
   async refreshToken(refreshToken: string) {
-    try {
-      const payload = this.jwtService.verify(refreshToken) as JwtPayload;
+    const payload = this.jwtService.verify(refreshToken);
 
-      // Verificar que el usuario aún existe y está activo
-      const user = await this.usersService.findOne(
-        payload.tenantId,
-        payload.sub,
-      );
+    // Verificar que el usuario aún existe y está activo
+    const user = await this.usersService.findOne(payload.tenantId, payload.sub);
 
-      if (!user.isActive) {
-        throw new UnauthorizedException('User account is inactive');
-      }
-
-      // Generar nuevo access token
-      const newPayload: JwtPayload = {
-        sub: user.id,
-        email: user.email,
-        tenantId: user.tenantId,
-        role: user.role,
-      };
-
-      const newAccessToken = this.jwtService.sign(newPayload, {
-        expiresIn: '15m',
-      });
-      const newRefreshToken = this.jwtService.sign(newPayload, {
-        expiresIn: '7d',
-      });
-
-      // Log token refresh
-      await this.logService.logSuccess(
-        user.tenantId,
-        AUTH_ACTIONS.REFRESH_TOKEN,
-        RESOURCES.USER,
-        user.id,
-        user.id,
-        {
-          email: user.email,
-        },
-      );
-
-      return {
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
-      };
-    } catch (error) {
-      throw new UnauthorizedException('Invalid refresh token');
+    if (!user.isActive) {
+      throw new UnauthorizedException('User account is inactive');
     }
+
+    // Generar nuevo access token
+    const newPayload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      tenantId: user.tenantId,
+      role: user.role,
+    };
+
+    const newAccessToken = this.jwtService.sign(newPayload, {
+      expiresIn: '15m',
+    });
+    const newRefreshToken = this.jwtService.sign(newPayload, {
+      expiresIn: '7d',
+    });
+
+    // Log token refresh
+    await this.logService.logSuccess(
+      user.tenantId,
+      AUTH_ACTIONS.REFRESH_TOKEN,
+      RESOURCES.USER,
+      user.id,
+      user.id,
+      {
+        email: user.email,
+      },
+    );
+
+    return {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    };
   }
 
   async logout(userId: string, tenantId: string) {
@@ -327,19 +320,12 @@ export class AuthService {
   }
 
   async validateUser(payload: JwtPayload) {
-    try {
-      const user = await this.usersService.findOne(
-        payload.tenantId,
-        payload.sub,
-      );
+    const user = await this.usersService.findOne(payload.tenantId, payload.sub);
 
-      if (!user.isActive) {
-        throw new UnauthorizedException('User account is inactive');
-      }
-
-      return user;
-    } catch (error) {
-      throw new UnauthorizedException('Invalid token');
+    if (!user.isActive) {
+      throw new UnauthorizedException('User account is inactive');
     }
+
+    return user;
   }
 }
