@@ -103,7 +103,5 @@ export class AuthController {
 
   @Get('validate')
   @UseGuards(JwtAuthGuard)
-  async validateUser(@Req() req: any) {
-    return { ok: true };
-  }
+  async validateUser() {}
 }
