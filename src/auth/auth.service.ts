@@ -183,8 +183,7 @@ export class AuthService {
 
   async logout(userId: string, tenantId: string) {
     try {
-      // En una implementación más completa, aquí agregarías el token a una blacklist
-      // Por ahora, solo registramos el logout
+      // TODO: Agregar una lógica para invalidar el refreshToken, y hacer eso de la blacklist.
 
       await this.logService.logSuccess(
         tenantId,

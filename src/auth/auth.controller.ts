@@ -100,4 +100,10 @@ export class AuthController {
   async getProfile(@Req() req: any) {
     return req.user;
   }
+
+  @Get('validate')
+  @UseGuards(JwtAuthGuard)
+  async validateUser(@Req() req: any) {
+    return { ok: true };
+  }
 }
