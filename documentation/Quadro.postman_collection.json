@@ -1,0 +1,3445 @@
+{
+	"info": {
+		"_postman_id": "fdbbb05c-7491-4393-bd10-2cf66f55af82",
+		"name": "Quadro",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15152432"
+	},
+	"item": [
+		{
+			"name": "Tenants",
+			"item": [
+				{
+					"name": "Get all tenants",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get tenant by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get tenant by slug",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/slug/{{slug}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"slug",
+								"{{slug}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create tenant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Tienda 001\",\r\n  \"slug\": \"tienda-test-{{$randomInt}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Creation",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Dummy shop\",\r\n    \"slug\": \"dummy-shop\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local_url}}/{{prefix}}/{{version}}/tenants",
+									"host": [
+										"{{local_url}}"
+									],
+									"path": [
+										"{{prefix}}",
+										"{{version}}",
+										"tenants"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "179"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"b3-FEbIy+wC0Qlr00hLzQXeYa8/bhg\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 17 Jul 2025 04:37:07 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"92a7148b-5dd7-4fa5-915b-754aa608c15a\",\n    \"name\": \"Dummy shop\",\n    \"slug\": \"dummy-shop\",\n    \"isActive\": true,\n    \"createdAt\": \"2025-07-17T04:37:06.192Z\",\n    \"updatedAt\": \"2025-07-17T04:37:06.192Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update tenant",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Dummy tenant\",\r\n    \"slug\": \"dev\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/92a7148b-5dd7-4fa5-915b-754aa608c15a",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"92a7148b-5dd7-4fa5-915b-754aa608c15a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete tenant",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/1fbe5eb2-a6c6-4c34-aa93-587c8ae9c551",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"1fbe5eb2-a6c6-4c34-aa93-587c8ae9c551"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Settings",
+			"item": [
+				{
+					"name": "Get settings",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/settings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update settings",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"companyName\": \"Mi empresa actualizada\",\n  \"currency\": \"COP\",\n  \"locale\": \"es-CO\",\n  \"timezone\": \"America/Bogota\",\n  \"invoicePrefix\": \"FAC-\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/settings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"settings"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "Get all categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/categories?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"categories"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create category (electronics)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('categoryElectronicsId', response.id);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Electrónicos\",\n  \"description\": \"Dispositivos electrónicos y accesorios\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create category (to delete)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('categoryToDeleteId', response.id);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Para crear\",\n  \"description\": \"Categoría creada para testear\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create category (clothing)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('categoryClothingId', response.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Ropa\",\n  \"description\": \"Ropa y accesorios de vestir\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get category by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/categories/{{categoryElectronicsId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"categories",
+								"{{categoryElectronicsId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update category",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Electrónicos y Gadgets a modificar\",\n  \"description\": \"Dispositivos electrónicos, gadgets y accesorios tecnológicos\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/categories/{{categoryElectronicsId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"categories",
+								"{{categoryElectronicsId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/categories/{{categoryToDeleteId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"categories",
+								"{{categoryToDeleteId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Create product (iPhone)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('productIphoneId', response.id);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"iPhone 15 Pro Max\",\n  \"description\": \"Último modelo de iPhone con cámara profesional y chip A17 Pro\",\n  \"price\": 1299.99,\n  \"stock\": 50,\n  \"minStock\": 10,\n  \"sku\": \"IPHONE-15-PRO-MAX-2561\",\n  \"imageUrl\": \"https://example.com/iphone15promax.jpg\",\n  \"isPublished\": true,\n  \"category\": {\n    \"connect\": {\n      \"id\": \"{{categoryElectronicsId}}\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create product (T-Shirt)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('productTshirtId', response.id);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Camiseta Básica Algodón\",\n  \"description\": \"Camiseta 100% algodón, perfecta para uso diario\",\n  \"price\": 25.99,\n  \"stock\": 100,\n  \"minStock\": 20,\n  \"sku\": \"TSHIRT-BASIC-M-BLACK\",\n  \"imageUrl\": \"https://example.com/tshirt-black.jpg\",\n  \"isPublished\": true,\n  \"category\": {\n    \"connect\": {\n      \"id\": \"{{categoryClothingId}}\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create product (Laptop, low stock)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('productLaptopId', response.id);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"MacBook Pro 14 M3\",\n  \"description\": \"MacBook Pro con chip M3, pantalla Liquid Retina XDR\",\n  \"price\": 2499.99,\n  \"stock\": 3,\n  \"minStock\": 5,\n  \"sku\": \"MACBOOK-PRO-14-M3-512\",\n  \"imageUrl\": \"https://example.com/macbook-pro-14.jpg\",\n  \"isPublished\": false,\n  \"category\": {\n    \"connect\": {\n      \"id\": \"{{categoryElectronicsId}}\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all products",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/products?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"products"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get products (by category)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/products?categoryId={{categoryElectronicsId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"products"
+							],
+							"query": [
+								{
+									"key": "categoryId",
+									"value": "{{categoryElectronicsId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get products (published only)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/products?isPublished=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"products"
+							],
+							"query": [
+								{
+									"key": "isPublished",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get products (low stock alert)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/products?lowStock=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"products"
+							],
+							"query": [
+								{
+									"key": "lowStock",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/products?search=iPhone",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"products"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "iPhone"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get product by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/products/{{productIphoneId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"products",
+								"{{productIphoneId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update product",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"iPhone 15 Pro Max - 512GB\",\n  \"description\": \"Último modelo de iPhone con cámara profesional, chip A17 Pro y 512GB de almacenamiento\",\n  \"price\": 1499.99\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/products/{{productIphoneId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"products",
+								"{{productIphoneId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update product stock",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"stock\": 75\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/products/{{productIphoneId}}/stock",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"products",
+								"{{productIphoneId}}",
+								"stock"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish product",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"isPublished\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/products/{{productLaptopId}}/publish",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"products",
+								"{{productLaptopId}}",
+								"publish"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unpublish product",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"isPublished\": false\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/products/{{productTshirtId}}/publish",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"products",
+								"{{productTshirtId}}",
+								"publish"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Errors",
+			"item": [
+				{
+					"name": "Invalid tenant ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/invalid-uuid/catalog/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"invalid-uuid",
+								"catalog",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Non-existent category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/categories/{{$randomUUID}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"categories",
+								"{{$randomUUID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Duplicate category name",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Electrónicos y Gadgets\",\n  \"description\": \"Esta debería fallar por nombre duplicado\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Duplicate product SKU",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Otro iPhone\",\n  \"description\": \"Este debería fallar por SKU duplicado\",\n  \"price\": 999.99,\n  \"stock\": 10,\n  \"sku\": \"IPHONE-15-PRO-MAX-256\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Product with invalid category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Producto Test\",\n  \"description\": \"Este debería fallar por categoría inexistente\",\n  \"price\": 100.00,\n  \"stock\": 10,\n  \"sku\": \"TEST-INVALID-CATEGORY\",\n  \"category\": {\n    \"connect\": {\n      \"id\": \"00000000-0000-0000-0000-000000000000\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/catalog/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"catalog",
+								"products"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Customers",
+			"item": [
+				{
+					"name": "Create customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.collectionVariables.set('customerId', response.id);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"juan.perez2@example.com\",\n    \"name\": \"Juan Pérez\",\n    \"phone\": \"+57 300 123 4567\",\n    \"address\": \"Carrera 7 #123-45, Bogotá\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/customers",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"customers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get customers",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/customers",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"customers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get customers (with pagination)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/customers?page=2&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"customers"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get customers (search)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/customers?search=juan",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"customers"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "juan"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get customers (all params)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/customers?page=1&limit=5&search=juan",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"customers"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "search",
+									"value": "juan"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get customer by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/customers/{{customerId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"customers",
+								"{{customerId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update customer",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Juan Carlos Pérez\",\n    \"phone\": \"+57 310 987 6543\",\n    \"address\": \"Calle 26 #15-30, Medellín\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/customers/{{customerId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"customers",
+								"{{customerId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update customer email",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"juan.carlos@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/customers/{{customerId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"customers",
+								"{{customerId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete customer",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/customers/{{customerId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"customers",
+								"{{customerId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Create order (guest checkout)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerName\": \"{{$randomFullName}}\",\n    \"customerEmail\": \"{{$randomEmail}}\",\n    \"shippingAddress\": \"Carrera 7 #123-45, Bogotá\",\n    \"notes\": \"Entregar en horario de oficina\",\n    \"items\": [\n      {\n        \"productId\": \"{{productIphoneId}}\",\n        \"quantity\": 2\n      },\n      {\n        \"productId\": \"{{productLaptopId}}\",\n        \"quantity\": 1\n      }\n    ]\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create order (existent customer ID)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerName\": \"Juan Carlos Pérez\",\n    \"customerEmail\": \"juan.carlos@example.com\",\n    \"customerId\": \"ee8ac6f0-b45c-49eb-bdf8-e8d3b18ba2d9\",\n    \"items\": [\n      {\n        \"productId\": \"{{productIphoneId}}\",\n        \"quantity\": 1\n      }\n    ]\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create order (with discount code)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerName\": \"{{$randomFullName}}\",\n    \"customerEmail\": \"{{$randomEmail}}\",\n    \"discountCode\": \"WELCOME10\",\n    \"shippingAddress\": \"Calle 26 #15-30, Medellín\",\n    \"items\": [\n        {\n            \"productId\": \"{{productIphoneId}}\",\n            \"quantity\": 50\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get orders",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get orders (with pagination)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/orders?page=2&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get orders (by status)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/orders?status=pending",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "pending"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get orders by customer ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/orders?customerId={{customerId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "customerId",
+									"value": "{{customerId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get orders by date",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/orders?fromDate=2025-07-01&toDate=2025-07-31",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "fromDate",
+									"value": "2025-07-01"
+								},
+								{
+									"key": "toDate",
+									"value": "2025-07-31"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get orders (all params)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/orders?page=1&limit=5&status=paid&customerId={{customerId}}&fromDate=2025-07-01&toDate=2025-07-31",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "status",
+									"value": "paid"
+								},
+								{
+									"key": "customerId",
+									"value": "{{customerId}}"
+								},
+								{
+									"key": "fromDate",
+									"value": "2025-07-01"
+								},
+								{
+									"key": "toDate",
+									"value": "2025-07-31"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get order by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/orders/{{orderId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"orders",
+								"{{orderId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update order",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerName\": \"Juan Carlos Pérez\",\n    \"shippingAddress\": \"Nueva dirección: Calle 85 #20-15, Bogotá\",\n    \"notes\": \"Actualización: Entregar después de las 2 PM\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/orders/{{orderId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"orders",
+								"{{orderId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"paid\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/orders/{{orderId}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"orders",
+								"{{orderId}}",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel order",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/orders/{{orderId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"orders",
+								"{{orderId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Discounts",
+			"item": [
+				{
+					"name": "Create discount (%)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.collectionVariables.set('discountId', response.id);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"WELCOME10\",\n    \"description\": \"10% de descuento para nuevos clientes\",\n    \"type\": \"percentage\",\n    \"value\": 10,\n    \"active\": true,\n    \"startDate\": \"2025-07-01T00:00:00.000Z\",\n    \"endDate\": \"2025-12-31T23:59:59.999Z\",\n    \"usageLimit\": 100,\n    \"minimumOrderAmount\": 50000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/discounts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"discounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create discount (fixed)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"SAVE5000\",\n    \"description\": \"Descuento de $5,000 en tu compra\",\n    \"type\": \"fixed\",\n    \"value\": 5000,\n    \"active\": true,\n    \"usageLimit\": 50,\n    \"minimumOrderAmount\": 25000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/discounts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"discounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create discount (unlimited)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"UNLIMITED\",\n    \"description\": \"Descuento permanente del 5%\",\n    \"type\": \"percentage\",\n    \"value\": 5,\n    \"active\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/discounts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"discounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all discounts",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/discounts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"discounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all discounts (with pagination)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/discounts?page=1&limit=5",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"discounts"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all discounts (active only)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/discounts?active=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"discounts"
+							],
+							"query": [
+								{
+									"key": "active",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all discounts (inactive only)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/discounts?active=false",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"discounts"
+							],
+							"query": [
+								{
+									"key": "active",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get discount by ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/discounts/{{discountId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"discounts",
+								"{{discountId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate discount",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"WELCOME10\",\n    \"orderAmount\": 100000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/discounts/validate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"discounts",
+								"validate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate discount (insufficient balance)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"WELCOME10\",\n    \"orderAmount\": 25000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/discounts/validate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"discounts",
+								"validate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update discount",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"active\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/discounts/{{discountId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"discounts",
+								"{{discountId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update discount (new end date)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"endDate\": \"2026-01-31T23:59:59.999Z\",\n    \"description\": \"Descuento extendido hasta enero 2026\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/discounts/{{discountId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"discounts",
+								"{{discountId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update discount (more limit usage)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usageLimit\": 200\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/discounts/{{discountId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"discounts",
+								"{{discountId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get discount stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/discounts/{{discountId}}/stats",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"discounts",
+								"{{discountId}}",
+								"stats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete discount",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/discounts/{{discountId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"discounts",
+								"{{discountId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create user (admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin2@empresa.com\",\n    \"password\": \"AdminPass123!\",\n    \"name\": \"Juan Carlos Administrador\",\n    \"role\": \"admin\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create user (staff)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.collectionVariables.set('userId', response.id);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"maria.staff2@empresa.com\",\n    \"password\": \"StaffPass456!\",\n    \"name\": \"María García Staff\",\n    \"role\": \"staff\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users (with pagination)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users?page=1&limit=5",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users (admin only)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users?role=admin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "admin"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users (active only)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users?isActive=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users"
+							],
+							"query": [
+								{
+									"key": "isActive",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user by ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Juan Carlos Pérez Administrador\",\n    \"email\": \"juan.carlos@empresa.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change user role",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"role\": \"staff\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate user",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"isActive\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"NuevaPassword789!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/{{userId}}/password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"{{userId}}",
+								"password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "(Moved) Ask for password reset",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.collectionVariables.set('resetToken', response.resetToken);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@empresa.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/forgot-password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "(Moved) Reset password with token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"{{resetToken}}\",\n    \"password\": \"NuevaPasswordReset123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/reset-password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login (admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Set accessToken and refreshToken values in variables\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);\r",
+									"    pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin2@empresa.com\",\n    \"password\": \"AdminPass123!\",\n    \"tenantId\": \"{{tenantId}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login (staff)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Set accessToken and refreshToken values in variables\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);\r",
+									"    pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"maria.staff@empresa.com\",\n    \"password\": \"NuevaPassword789!\",\n    \"tenantId\": \"{{tenantId}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Set accessToken and refreshToken values in variables\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);\r",
+									"    pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"{{refreshToken}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ask for password reset",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@empresa.com\",\n    \"tenantId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/forgot-password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"a1b2c3d4e5f6789012345678901234567890abcd\",\n    \"newPassword\": \"NuevaPasswordReset123!\",\n    \"tenantId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/reset-password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get profile (me)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/validate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"validate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Logs",
+			"item": [
+				{
+					"name": "Get all logs by tenant",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/logs",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"logs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get logs by tenant (with pagination)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/logs/paginated?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"logs",
+								"paginated"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get logs by tenant (with params and pagination)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/logs/paginated?page=1&limit=5&resource=ORDER&action=CREATE",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"logs",
+								"paginated"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "resource",
+									"value": "ORDER"
+								},
+								{
+									"key": "action",
+									"value": "CREATE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get logs by action",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/logs?action=CREATE",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"logs"
+							],
+							"query": [
+								{
+									"key": "action",
+									"value": "CREATE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get logs by resource",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/logs?resource=PRODUCT",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"logs"
+							],
+							"query": [
+								{
+									"key": "resource",
+									"value": "PRODUCT"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get logs by date",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/logs?fromDate=2025-07-01&toDate=2025-07-31",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"logs"
+							],
+							"query": [
+								{
+									"key": "fromDate",
+									"value": "2025-07-01"
+								},
+								{
+									"key": "toDate",
+									"value": "2025-07-31"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api/v1"
+		},
+		{
+			"key": "tenantId",
+			"value": "be775553-17a1-4bcd-b674-d8d9a4c905c7"
+		},
+		{
+			"key": "categoryElectronicsId",
+			"value": ""
+		},
+		{
+			"key": "categoryClothingId",
+			"value": ""
+		},
+		{
+			"key": "productIphoneId",
+			"value": ""
+		},
+		{
+			"key": "productTshirtId",
+			"value": ""
+		},
+		{
+			"key": "productLaptopId",
+			"value": ""
+		},
+		{
+			"key": "categoryToDeleteId",
+			"value": ""
+		},
+		{
+			"key": "customerId",
+			"value": "ee8ac6f0-b45c-49eb-bdf8-e8d3b18ba2d9"
+		},
+		{
+			"key": "orderId",
+			"value": "5cf386a3-bb70-4c0d-9ef2-f0656e1204c5"
+		},
+		{
+			"key": "discountId",
+			"value": ""
+		},
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "resetToken",
+			"value": ""
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		},
+		{
+			"key": "slug",
+			"value": "tienda-test-890",
+			"type": "string"
+		}
+	]
+}
