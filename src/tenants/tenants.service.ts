@@ -112,6 +112,13 @@ export class TenantsService {
   async findBySlug(slug: string) {
     const tenant = await this.databaseService.tenant.findUnique({
       where: { slug },
+      include: {
+        settings: {
+          select: {
+            companyLogoUrl: true,
+          },
+        },
+      },
     });
 
     if (!tenant) {

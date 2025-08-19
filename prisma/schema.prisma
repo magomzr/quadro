@@ -33,7 +33,7 @@ model Tenant {
   orderItems OrderItem[]
   discounts  Discount[]
   customers  Customer[]
-  settings   Settings[]
+  settings   Settings?
   logs       Log[]
 
   @@map("tenants")
